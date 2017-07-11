@@ -5,9 +5,16 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import com.firebase.jobdispatcher.FirebaseJobDispatcher;
+import com.firebase.jobdispatcher.GooglePlayDriver;
+import com.firebase.jobdispatcher.Job;
+import com.firebase.jobdispatcher.Lifetime;
+import com.firebase.jobdispatcher.Trigger;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -26,6 +33,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
+
+        //AlarmManager -> stop using it
+        //API 21 and up  -> job scheduler
 
 
     }
@@ -57,5 +67,23 @@ public class MainActivity extends AppCompatActivity {
 
         String token = prefs.getString("token", "");
         Toast.makeText(this ,token , Toast.LENGTH_SHORT).show();
+        Log.d("Ness" , token);
+
+        // Create a new dispatcher using the Google Play driver.(dispacher dispatch and cancel jobs:
+        FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(this /*context*/));
+
+        int start =(int) java.util.concurrent.TimeUnit.HOURS.toSeconds(2);
+        int end =(int) java.util.concurrent.TimeUnit.HOURS.toSeconds(3);
+
+        //Criteria for running the service
+
+        Job myJob = dispatcher.newJobBuilder().
+                setTag("my job tag")
+                .setService(MyJobService.class)
+                .setLifetime(Lifetime.UNTIL_NEXT_BOOT).setRecurring(false).
+                        setTrigger(Trigger.executionWindow(start, end))
+                .build();
+
+        dispatcher.mustSchedule(myJob);
     }
 }
