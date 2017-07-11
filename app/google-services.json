@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "128155412945",
+    "firebase_url": "https://servicesandnotifications-205df.firebaseio.com",
+    "project_id": "servicesandnotifications-205df",
+    "storage_bucket": "servicesandnotifications-205df.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:128155412945:android:6922f6bb9c51fafc",
+        "android_client_info": {
+          "package_name": "hagai.edu.servicesandnotifications"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "128155412945-go8tpme36p8qps92bj033lfq9s5ruc3e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "hagai.edu.servicesandnotifications",
+            "certificate_hash": "98bee2c4652c04d77a0905c88999ce9cce93d37c"
+          }
+        },
+        {
+          "client_id": "128155412945-q06j2acdqsts5bldhtvk6ujjug412qna.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAfP42P7trNcKQEUBXJaqMd_Fj9NMhYJ6U"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "128155412945-q06j2acdqsts5bldhtvk6ujjug412qna.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
