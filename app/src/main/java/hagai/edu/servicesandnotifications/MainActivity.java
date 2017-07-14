@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.firebase.jobdispatcher.Constraint;
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
 import com.firebase.jobdispatcher.GooglePlayDriver;
 import com.firebase.jobdispatcher.Job;
@@ -71,25 +72,72 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, token, Toast.LENGTH_SHORT).show();
         Log.d("Ness", token);
 
+        recurringJob();
+    }
 
+    private void oneTimeJobNow() {
         //dispatcher dispatch and cancel jobs:
         FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(this/*context*/));
 
 
-
-        int start = (int)java.util.concurrent.TimeUnit.HOURS.toSeconds(2);
-        int end = (int) TimeUnit.HOURS.toSeconds(3);
-
-        //Criteria for running the service
         Job job = dispatcher.newJobBuilder().
-                setTag("my job tag").
                 setService(MyJobService.class).
-                setLifetime(Lifetime.UNTIL_NEXT_BOOT).
-                setRecurring(false).
-                setTrigger(Trigger.executionWindow(start, end)).
+                setTag("oneTimeJobNowTag").
+                setTrigger(Trigger.NOW).
                 build();
-        //tag identifies the job -> cancel
+
+        dispatcher.mustSchedule(job);
+        //startService(new Intent(this, myJobService.class);
+    }
+
+    private void oneTimeJobAfterOneHour() {
+        //dispatcher dispatch and cancel jobs:
+        FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(this/*context*/));
+
+        //explicit cast
+        int secondsToStart = (int) TimeUnit.HOURS.toSeconds(1);
+
+        Job job = dispatcher.newJobBuilder().
+                setService(MyJobService.class).
+                setTag("myOneTimeJobHourTag").
+                //One Time Job.
+                        setRecurring(false).
+                        setLifetime(Lifetime.FOREVER). //Boot Complete
+                //the tolerance is but a suggestion to the system
+                //windowStart -> don't start me before this time.
+                //time in seconds:
+                        setTrigger(Trigger.executionWindow(secondsToStart, secondsToStart + 60)).
+                        build();
 
         dispatcher.mustSchedule(job);
     }
+
+    private void recurringJob() {
+        //dispatcher dispatch and cancel jobs:
+        FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(this/*context*/));
+
+        //explicit cast
+        int secondsToStart = (int) TimeUnit.HOURS.toSeconds(1);
+
+        Job job = dispatcher.newJobBuilder().
+                setService(MyJobService.class).
+                setTag("myRecurringUniqueTag").
+                //Recurring job
+                        setRecurring(true).
+                        setLifetime(Lifetime.FOREVER). //Boot Complete
+                setReplaceCurrent(true).
+                //setConstraints(Constraint.ON_UNMETERED_NETWORK, Constraint.DEVICE_CHARGING, Constraint.DEVICE_IDLE).
+                        setConstraints(Constraint.ON_ANY_NETWORK).
+                //time in seconds:
+                //once per hour.
+                //setTrigger(Trigger.executionWindow(secondsToStart, secondsToStart + 60)).
+                //mere suggestion to the os.
+                        setTrigger(Trigger.executionWindow(0, 19)).
+                        build();
+
+        dispatcher.mustSchedule(job);
+        //dispatcher.cancel("myRecurringUniqueTag");
+    }
+
+
 }
