@@ -6,7 +6,7 @@ import com.firebase.jobdispatcher.JobParameters;
 import com.firebase.jobdispatcher.JobService;
 
 /**
- * Created by Hagai Zamir on 11-Jul-17.
+ * presents a job to be dispatched while the device is idle
  */
 
 public class MyJobService extends JobService {

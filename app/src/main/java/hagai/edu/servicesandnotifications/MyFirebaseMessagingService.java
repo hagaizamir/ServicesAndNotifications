@@ -9,98 +9,97 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.os.Build;
-import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
-import com.google.firebase.messaging.RemoteMessage;
 
-import static android.media.RingtoneManager.TYPE_NOTIFICATION;
 
-/**
- * Created by Hagai Zamir on 11-Jul-17.
- */
+//Receive firebase messages here
+
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
-    public static  final  String TAG = "NESS";
+    public static final String TAG = "Ness";
 
-    @Override
-    public void onMessageReceived(RemoteMessage remoteMessage) {
-        super.onMessageReceived(remoteMessage);
-        Log.d(TAG ,"onMessageReceive: Received");
-    }
 
     @Override
     public void handleIntent(Intent intent) {
+
         //get the payload from your notification
         String title = intent.getExtras().getString("title");
-        String shirtMessage = intent.getExtras().getString("short");
+        String shortMessage = intent.getExtras().getString("short");
         //
-        //super - if the app is in the background:
+        //super if the app is in the background:
         //send a push notification "DEFAULT" title and icon
+
 
         //if the app is in the foreground:
         //send the push to onMessageReceived
 
-        Intent contentIntent = new Intent(this , MainActivity.class);
-        //put some extras // TODO: take some extras from the original cloud message
-        PendingIntent pi = PendingIntent.getActivity(this , 1 ,contentIntent , PendingIntent.FLAG_UPDATE_CURRENT);
 
-        //Deprecated in API LEVEL
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+        Intent contentIntent = new Intent(this, MainActivity.class);
+        //put some extras
+        PendingIntent pi =
+                PendingIntent.getActivity(this, 1, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+
+        //Deprecated in API LEVEL O
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             String channelName = "Channel1";
             setupChannel(channelName);
+            //android.app.Notification;
             Notification.Builder builder = new Notification.Builder(this, channelName);
 
-            //title , text , smallIcon, -> 99.9 contentIntent , setAutoCancel
+            //title, text, smallIcon, ->99.9 contentIntent, setAutoCancel
             builder.setContentTitle(title).
-                    setContentText(shirtMessage).
+                    setContentText(shortMessage).
                     setSmallIcon(R.drawable.ic_note).
-                    setLargeIcon(BitmapFactory.decodeResource(getResources(),R.mipmap.ic_launcher_round)).
+                    setLargeIcon(BitmapFactory.decodeResource(
+                            getResources(), R.mipmap.ic_launcher_round
+                    )).
                     setBadgeIconType(Notification.BADGE_ICON_LARGE).
                     setAutoCancel(true).
-                    setContentIntent(pi);;
+                    setContentIntent(pi);
 
-
-
-            NotificationManager mgr = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+            NotificationManager mgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             mgr.notify(1, builder.build());
-
-
-        } else {
+        }else {
             Notification.Builder builder = new Notification.Builder(this);
+
             builder.setContentTitle(title).
-                    setContentText(shirtMessage).
+                    setContentText(shortMessage).
                     setSmallIcon(R.drawable.ic_note).
-                    setPriority(Notification.PRIORITY_HIGH)./*PUSH THE NOTIFICATION FROM THE TOP*/
+                    setPriority(Notification.PRIORITY_HIGH). /*Push the notification from the top*/
                     setDefaults(Notification.DEFAULT_ALL).
                     setAutoCancel(true).
                     setContentIntent(pi);
 
-
+            NotificationManager mgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            mgr.notify(1, builder.build());
         }
-
     }
+
     @TargetApi(Build.VERSION_CODES.O)
-    private void  setupChannel (String id){
+    private void setupChannel(String id){
         String channelName = getResources().getString(R.string.channel1_name);
-        NotificationChannel channel =
-                new NotificationChannel(id,channelName , NotificationManager.IMPORTANCE_HIGH);
+        NotificationChannel channel = new NotificationChannel(id,
+                channelName,
+                NotificationManager.IMPORTANCE_HIGH
+        );
 
         channel.setDescription(getResources().getString(R.string.channel_description));
         channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
-        channel.enableLights(true);
         channel.enableVibration(true);
-        channel.setSound(
-                RingtoneManager.getDefaultUri(TYPE_NOTIFICATION),
-                Notification.AUDIO_ATTRIBUTES_DEFAULT);
+        channel.enableLights(true);
+
+        channel.setSound(RingtoneManager.getDefaultUri(
+                RingtoneManager.TYPE_NOTIFICATION),
+                Notification.AUDIO_ATTRIBUTES_DEFAULT
+        );
 
         channel.setShowBadge(true);
 
-        //TODO: CUSTOM SOUNDS
-
-        NotificationManager mgr =(NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        //TODO: Custom sounds
+        NotificationManager mgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         mgr.createNotificationChannel(channel);
-
-
     }
 }

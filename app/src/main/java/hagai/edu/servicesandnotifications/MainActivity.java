@@ -16,14 +16,16 @@ import com.firebase.jobdispatcher.Job;
 import com.firebase.jobdispatcher.Lifetime;
 import com.firebase.jobdispatcher.Trigger;
 
+import java.util.concurrent.TimeUnit;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity {
-
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+
     @BindView(R.id.fab)
     FloatingActionButton fab;
 
@@ -35,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         //AlarmManager -> stop using it
-        //API 21 and up  -> job scheduler
+        //API 21 and up -> Job Scheduler
 
 
     }
@@ -66,24 +68,28 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences("id", MODE_PRIVATE);
 
         String token = prefs.getString("token", "");
-        Toast.makeText(this ,token , Toast.LENGTH_SHORT).show();
-        Log.d("Ness" , token);
+        Toast.makeText(this, token, Toast.LENGTH_SHORT).show();
+        Log.d("Ness", token);
 
-        // Create a new dispatcher using the Google Play driver.(dispacher dispatch and cancel jobs:
-        FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(this /*context*/));
 
-        int start =(int) java.util.concurrent.TimeUnit.HOURS.toSeconds(2);
-        int end =(int) java.util.concurrent.TimeUnit.HOURS.toSeconds(3);
+        //dispatcher dispatch and cancel jobs:
+        FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(this/*context*/));
+
+
+
+        int start = (int)java.util.concurrent.TimeUnit.HOURS.toSeconds(2);
+        int end = (int) TimeUnit.HOURS.toSeconds(3);
 
         //Criteria for running the service
+        Job job = dispatcher.newJobBuilder().
+                setTag("my job tag").
+                setService(MyJobService.class).
+                setLifetime(Lifetime.UNTIL_NEXT_BOOT).
+                setRecurring(false).
+                setTrigger(Trigger.executionWindow(start, end)).
+                build();
+        //tag identifies the job -> cancel
 
-        Job myJob = dispatcher.newJobBuilder().
-                setTag("my job tag")
-                .setService(MyJobService.class)
-                .setLifetime(Lifetime.UNTIL_NEXT_BOOT).setRecurring(false).
-                        setTrigger(Trigger.executionWindow(start, end))
-                .build();
-
-        dispatcher.mustSchedule(myJob);
+        dispatcher.mustSchedule(job);
     }
 }
